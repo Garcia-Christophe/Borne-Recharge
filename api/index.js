@@ -344,7 +344,7 @@ createConnection({
         else accesBorne = " accesBorne = '" + req.body.accesBorne + "'";
       }
 
-      let idUFR = " WHERE idBorne = " + id + ";";
+      let idBorne = " WHERE idBorne = " + id + ";";
       if (longitude !== "" || latitude !== "" || accesBorne !== "") {
         query =
           "UPDATE BORNE SET" + longitude + latitude + accesBorne + idBorne;
@@ -392,9 +392,6 @@ createConnection({
     // Supprimer un utilisateur
     app.delete("/utilisateur/:id", (req, res) => {
       const id = parseInt(req.params.id);
-      const query =
-        "DELETE FROM UTILISATEUR WHERE idUtilisateur = '" + id + "';";
-      requete(conn, res, query);
 
       // supprimer les lignes correspondantes dans les tables liaison
       const query =
@@ -402,17 +399,22 @@ createConnection({
         id +
         "';";
       requete(conn, res, query);
+
+      const query =
+        "DELETE FROM UTILISATEUR WHERE idUtilisateur = '" + id + "';";
+      requete(conn, res, query);
     });
 
     // Supprimer une recharge
     app.delete("/recharge/:id", (req, res) => {
       const id = parseInt(req.params.id);
-      const query = "DELETE FROM RECHARGE WHERE idRecharge = '" + id + "';";
-      requete(conn, res, query);
 
       // supprimer les lignes correspondantes dans la table liaison
       const query =
         "DELETE FROM LIAISON_BORNE_RECHARGE WHERE idRecharge = '" + id + "';";
+      requete(conn, res, query);
+
+      const query = "DELETE FROM RECHARGE WHERE idRecharge = '" + id + "';";
       requete(conn, res, query);
     });
 
