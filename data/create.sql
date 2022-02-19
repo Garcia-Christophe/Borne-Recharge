@@ -8,21 +8,25 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Drop tables if exist of zil3-zgarciach
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `zil3-zgarciach`.`LIAISON_UTILISATEUR_BORNE` ;
+DROP TABLE IF EXISTS `zil3-zgarciach`.`LIAISON_BORNE_RECHARGE` ;
+DROP TABLE IF EXISTS `zil3-zgarciach`.`TECHNICIEN` ;
+DROP TABLE IF EXISTS `zil3-zgarciach`.`BORNE` ;
+DROP TABLE IF EXISTS `zil3-zgarciach`.`UTILISATEUR` ;
+DROP TABLE IF EXISTS `zil3-zgarciach`.`RECHARGE` ;
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema zil3-zgarciach
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+-- CREATE SCHEMA IF NOT EXISTS `zil3-zgarciach` DEFAULT CHARACTER SET utf8 ;
+-- USE `zil3-zgarciach` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`RECHARGE`
+-- Table `zil3-zgarciach`.`RECHARGE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`RECHARGE` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`RECHARGE` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`RECHARGE` (
   `idRecharge` INT NOT NULL,
   `nomRecharge` VARCHAR(255) NOT NULL,
   `puissanceRecharge` VARCHAR(45) NULL,
@@ -32,11 +36,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`RECHARGE` (
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`UTILISATEUR`
+-- Table `zil3-zgarciach`.`UTILISATEUR`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`UTILISATEUR` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`UTILISATEUR` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`UTILISATEUR` (
   `idUtilisateur` INT NOT NULL,
   `profilUtilisateur` VARCHAR(255) NULL,
   `nomUtilisateur` VARCHAR(32) NOT NULL,
@@ -49,11 +51,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`UTILISATEUR` (
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`BORNE`
+-- Table `zil3-zgarciach`.`BORNE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`BORNE` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`BORNE` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`BORNE` (
   `idBorne` INT NOT NULL,
   `longitude` DOUBLE NULL,
   `latitude` DOUBLE NOT NULL,
@@ -62,33 +62,29 @@ CREATE TABLE IF NOT EXISTS `mydb`.`BORNE` (
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`LIAISON_BORNE_RECHARGE`
+-- Table `zil3-zgarciach`.`LIAISON_BORNE_RECHARGE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`LIAISON_BORNE_RECHARGE` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`LIAISON_BORNE_RECHARGE` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`LIAISON_BORNE_RECHARGE` (
   `idBorne` INT NOT NULL,
   `idRecharge` INT NOT NULL,
   PRIMARY KEY (`idBorne`, `idRecharge`),
-  INDEX `idRecharge_idx` (`idRecharge` ASC) VISIBLE,
+  INDEX `idRecharge_idx` (`idRecharge` ASC),
   CONSTRAINT `fkIdBorneRecharge`
     FOREIGN KEY (`idBorne`)
-    REFERENCES `mydb`.`BORNE` (`idBorne`)
+    REFERENCES `zil3-zgarciach`.`BORNE` (`idBorne`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fkBorneRecharge`
     FOREIGN KEY (`idRecharge`)
-    REFERENCES `mydb`.`RECHARGE` (`idRecharge`)
+    REFERENCES `zil3-zgarciach`.`RECHARGE` (`idRecharge`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`TECHNICIEN`
+-- Table `zil3-zgarciach`.`TECHNICIEN`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`TECHNICIEN` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`TECHNICIEN` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`TECHNICIEN` (
   `idTechnicien` INT NOT NULL,
   `nomTechnicien` VARCHAR(255) NOT NULL,
   `prenomTechnicien` VARCHAR(45) NULL,
@@ -96,32 +92,30 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TECHNICIEN` (
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`LIAISON_UTILISATEUR_BORNE`
+-- Table `zil3-zgarciach`.`LIAISON_UTILISATEUR_BORNE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`LIAISON_UTILISATEUR_BORNE` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`LIAISON_UTILISATEUR_BORNE` (
+CREATE TABLE IF NOT EXISTS `zil3-zgarciach`.`LIAISON_UTILISATEUR_BORNE` (
   `idUtilisateur` INT NOT NULL,
   `idBorne` INT NOT NULL,
   `idTechnicien` INT NOT NULL,
   `prixPose` DOUBLE NULL,
   `datePose` DATE NULL,
   PRIMARY KEY (`idUtilisateur`, `idBorne`, `idTechnicien`),
-  INDEX `fkBorne_idx` (`idBorne` ASC) VISIBLE,
-  INDEX `fkTechnicien_idx` (`idTechnicien` ASC) VISIBLE,
+  INDEX `fkBorne_idx` (`idBorne` ASC),
+  INDEX `fkTechnicien_idx` (`idTechnicien` ASC),
   CONSTRAINT `fkUtilisateur`
     FOREIGN KEY (`idUtilisateur`)
-    REFERENCES `mydb`.`UTILISATEUR` (`idUtilisateur`)
+    REFERENCES `zil3-zgarciach`.`UTILISATEUR` (`idUtilisateur`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fkBorne`
     FOREIGN KEY (`idBorne`)
-    REFERENCES `mydb`.`BORNE` (`idBorne`)
+    REFERENCES `zil3-zgarciach`.`BORNE` (`idBorne`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fkTechnicien`
     FOREIGN KEY (`idTechnicien`)
-    REFERENCES `mydb`.`TECHNICIEN` (`idTechnicien`)
+    REFERENCES `zil3-zgarciach`.`TECHNICIEN` (`idTechnicien`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
