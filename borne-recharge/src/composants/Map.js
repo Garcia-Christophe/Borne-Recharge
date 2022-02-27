@@ -11,9 +11,9 @@ export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      center: [{ lat: 48.390317071654714, lng: -4.485942630953148 }],
+      center: [{ lat: 46.632339, lng: 2.476532 }], // centre de la france
       places: [],
-      zoom: 12,
+      zoom: 6,
       mapApiLoaded: false,
       mapInstance: null,
       mapApi: null,
@@ -22,23 +22,9 @@ export default class Map extends Component {
       lng: null,
       bornes: [
         {
-          idBorne: 0,
-          lat: 48.393336061046526,
-          lng: -4.52146233829468,
-          recharges: [],
-          clicked: false,
-        },
-        {
-          idBorne: 1,
-          lat: 48.398741890988425,
-          lng: -4.4947074704475325,
-          recharges: [],
-          clicked: false,
-        },
-        {
-          idBorne: 2,
-          lat: 48.390193174993925,
-          lng: -4.477712994402111,
+          idBorne: -1,
+          lat: 46.632339,
+          lng: 2.476532,
           recharges: [],
           clicked: false,
         },
@@ -50,59 +36,84 @@ export default class Map extends Component {
   }
 
   componentDidMount() {
+    // Récupère toutes les bornes de la base de données
     let bornes = [];
-    // fetch bornes
-    //    if (b.accesBorne === "public") bornes.push({idBorne: b.idBorne, lng: b.longitude, lat: b.latitude, recharges=[]});
+    fetch("http://localhost:8080/borne")
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          // On n'affiche pas les bornes privées (on garde juste les bornes publiques)
+          result.map((borne) => {
+            if (borne.accesBorne.toUpperCase() === "PUBLIC") {
+              bornes.push({
+                idBorne: borne.idBorne,
+                lng: borne.longitude,
+                lat: borne.latitude,
+                recharges: [],
+                clicked: false,
+              });
+            }
 
-    // let recharges = [];
-    // fetch recharges...
+            return borne;
+          });
 
-    // let liaisonsBornesRecharges = [];
-    // fetch liaisons borne/recharges...
-    //    liaisonsBornesRecharges.map((liaison) => {bornes.find((idBorne) => idBorne === liaison.Borne_idBorne).recharges.push(recharges.find((idRecharge) => idRecharge === liaison.Recharge_idRecharge))});
+          // Récupère toutes les recharges de la base de données
+          let recharges = [];
+          fetch("http://localhost:8080/recharge")
+            .then((res) => res.json())
+            .then(
+              (result) => {
+                result.map((recharge) => {
+                  recharges.push({
+                    idRecharge: recharge.idRecharge,
+                    nomRecharge: recharge.nomRecharge,
+                    puissanceRecharge: recharge.puissanceRecharge,
+                    typeCourant: recharge.typeCourant,
+                    accesRecharge: recharge.accesRecharge,
+                  });
 
-    // temporaire
-    bornes = this.state.bornes;
-    bornes[0].recharges = [
-      {
-        idRecharge: 0,
-        nomRecharge: "Accélérée",
-        puissanceRecharge: 22,
-        typeCourant: "Alternatif triphasé",
-        accesRecharge: "Payant",
-      },
-      {
-        idRecharge: 1,
-        nomRecharge: "Standard",
-        puissanceRecharge: 3,
-        typeCourant: "Alternatif monophasé",
-        accesRecharge: "Gratuit",
-      },
-      {
-        idRecharge: 3,
-        nomRecharge: "Accélérée",
-        puissanceRecharge: 22,
-        typeCourant: "Alternatif triphasé",
-        accesRecharge: "Payant",
-      },
-      {
-        idRecharge: 4,
-        nomRecharge: "Standard",
-        puissanceRecharge: 3,
-        typeCourant: "Alternatif monophasé",
-        accesRecharge: "Gratuit",
-      },
-    ];
-    bornes[1].recharges = [
-      {
-        idRecharge: 0,
-        nomRecharge: "Accélérée",
-        puissanceRecharge: 17,
-        typeCourant: "Alternatif monophasé",
-        accesRecharge: "Payant",
-      },
-    ];
-    this.setState({ bornes });
+                  return recharge;
+                });
+
+                // Récupère toutes les liaisons borne/recharge de la base de données
+                fetch("http://localhost:8080/liaison_borne_recharge")
+                  .then((res) => res.json())
+                  .then(
+                    (result) => {
+                      // Attribution des recharges à chacune des bornes
+                      result.map((liaison) => {
+                        let borne = bornes.find(
+                          (b) => b.idBorne === liaison.idBorne
+                        );
+
+                        // Si ce n'est pas une borne privée
+                        if (borne !== undefined) {
+                          let recharge = recharges.find(
+                            (r) => r.idRecharge === liaison.idRecharge
+                          );
+
+                          borne.recharges.push(recharge);
+                        }
+
+                        return liaison;
+                      });
+
+                      this.setState({ bornes });
+                    },
+                    (error) => {
+                      console.log("Erreur /liaison_borne_recharge : " + error);
+                    }
+                  );
+              },
+              (error) => {
+                console.log("Erreur /recharge : " + error);
+              }
+            );
+        },
+        (error) => {
+          console.log("Erreur /borne : " + error);
+        }
+      );
   }
 
   componentWillMount() {
@@ -125,7 +136,7 @@ export default class Map extends Component {
   };
 
   /**
-   * Sauvegarde la place et adapte la map.
+   * Adapte la map sur le lieu choisi.
    *
    * @param place place choisie par l'utilisateur
    */

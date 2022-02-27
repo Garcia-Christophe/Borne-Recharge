@@ -3,7 +3,7 @@ import express, { json } from "express";
 import cors from "cors";
 import CryptoJS from "crypto-js";
 const app = express();
-require("dotenv").config();
+import Dotenv from "dotenv";
 
 // Middleware
 app.use(json());
@@ -47,6 +47,18 @@ createConnection({
     // Récupérer tous les techniciens
     app.get("/technicien", (req, res) => {
       const query = "select * from TECHNICIEN";
+      requete(conn, res, query);
+    });
+
+    // Récupérer toutes les liaisons borne/recharge
+    app.get("/liaison_borne_recharge", (req, res) => {
+      const query = "select * from LIAISON_BORNE_RECHARGE";
+      requete(conn, res, query);
+    });
+
+    // Récupérer toutes les liaisons utilisateur/borne
+    app.get("/liaison_utilisateur_borne", (req, res) => {
+      const query = "select * from LIAISONS_UTILISATEUR_BORNE";
       requete(conn, res, query);
     });
 
@@ -400,8 +412,7 @@ createConnection({
         "';";
       requete(conn, res, query);
 
-      const query =
-        "DELETE FROM UTILISATEUR WHERE idUtilisateur = '" + id + "';";
+      query = "DELETE FROM UTILISATEUR WHERE idUtilisateur = '" + id + "';";
       requete(conn, res, query);
     });
 
@@ -414,7 +425,7 @@ createConnection({
         "DELETE FROM LIAISON_BORNE_RECHARGE WHERE idRecharge = '" + id + "';";
       requete(conn, res, query);
 
-      const query = "DELETE FROM RECHARGE WHERE idRecharge = '" + id + "';";
+      query = "DELETE FROM RECHARGE WHERE idRecharge = '" + id + "';";
       requete(conn, res, query);
     });
 
@@ -425,11 +436,11 @@ createConnection({
       requete(conn, res, query);
 
       // supprimer les lignes correspondantes dans les tables liaison
-      const query =
+      query =
         "DELETE FROM LIAISON_BORNE_RECHARGE WHERE idBorne = '" + id + "';";
       requete(conn, res, query);
 
-      const query =
+      query =
         "DELETE FROM LIAISON_UTILISATEUR_BORNE WHERE Borne_idBorne = '" +
         id +
         "';";
