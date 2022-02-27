@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Button, Dropdown, Form } from "react-bootstrap";
-import emailjs from "emailjs-com";
 import "../style/Bornes.css";
 import borneBlanche from "../data/borneBlanche.jpg";
 import borneNoire from "../data/borneNoire.jpg";
@@ -79,7 +78,7 @@ export default class Bornes extends Component {
       ],
       accesBorneChoisi: { nom: "", prix: 0 },
       email: "",
-      mdp: "", // tmp -> hash ?
+      mdp: "",
       mailEnvoye: false,
     };
 
@@ -118,20 +117,6 @@ export default class Bornes extends Component {
    */
   handleConfirmerCommande(e) {
     e.preventDefault();
-
-    // TODO: plus tard, vérifier email/mdp
-
-    // Envoi du mail (temporaire : ne fonctionne pas)
-    // emailjs
-    //   .sendForm("default_service", "YOUR_TEMPLATE_ID", e.target, "YOUR_USER_ID")
-    //   .then(
-    //     (result) => {
-    //       console.log(result.text);
-    //     },
-    //     (error) => {
-    //       console.log(error.text);
-    //     }
-    //   );
 
     // Affichage du texte de confirmation
     this.setState({ mailEnvoye: true });
