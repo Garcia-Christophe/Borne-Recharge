@@ -13,7 +13,7 @@ export default class Recharge extends Component {
         <p id="div-principal-recharge-recharge">
           <b>Recharge {this.props.nomRecharge}</b>
         </p>
-        <p>Puissance : {this.props.puissanceRecharge} KW</p>
+        <p>Puissance : {this.props.puissanceRecharge}</p>
         <p>Type courant : {this.props.typeCourant}</p>
         <p>Accès : {this.props.accesRecharge}</p>
       </div>
