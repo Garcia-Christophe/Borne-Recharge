@@ -3,8 +3,11 @@ import express, { json } from "express";
 import cors from "cors";
 import CryptoJS from "crypto-js";
 const app = express();
+import nodemailer from "nodemailer";
+
 import Dotenv from "dotenv";
 
+//var nodemailer = nodemailer;
 // Middleware
 app.use(json());
 app.use(cors({ origin: "*" }));
@@ -473,3 +476,47 @@ function requete(conn, res, query) {
       console.log(err);
     });
 }
+
+
+// ===================================
+// Gestion des mails
+// ===================================
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'mayam.brest@gmail.com',
+    pass: 'yalloway'
+  }
+});
+
+app.post('/mail/borne', (req,res) => {
+  const data = req.body;
+  const recharge = data.recharge;
+
+  let name = req.body.email.split("@")[0];
+  var mailOptions = {
+      from: 'mayam.brest@gmail.com',
+      to: data.email,
+      subject: 'Récapitulatif de votre commande de borne',
+      text: 'Bonjour '+name
+      + ",\nMerci votre commande d'une borne "+data.recharge.nomRecharge.nom+" a été prise en compte !\nRécapitulatif de votre commande :"
+      + "\n\tNom de la recharge :"+data.recharge.nomRecharge.nom
+      + "\n\tPuissance de la borne : "+data.recharge.puissanceRecharge
+      + "\n\tType de courant : " + data.recharge.typeCourant.nom 
+      + "\n\tLatitude : " + data.latitude
+      + "\n\tLongitude : " + data.longitude
+      + "\n\tCouleur : " + data.couleur
+      + "\n\tAccès : " + data.recharge.accesRecharge.nom
+      + "\n\nMontant total de " + data.montant+"€"
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.send("Email was send");
+      }
+    });
+})

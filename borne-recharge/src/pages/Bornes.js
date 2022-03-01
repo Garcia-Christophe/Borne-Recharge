@@ -118,8 +118,32 @@ export default class Bornes extends Component {
   handleConfirmerCommande(e) {
     e.preventDefault();
 
+    let montant = this.state.recharge.nomRecharge.prix +
+    this.state.recharge.puissanceRecharge * 100 +
+    this.state.recharge.typeCourant.prix +
+    this.state.recharge.accesRecharge.prix +
+    this.state.accesBorneChoisi.prix +
+    this.state.couleurChoisie.prix;
+
     // Affichage du texte de confirmation
     this.setState({ mailEnvoye: true });
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: this.state.email, recharge : this.state.recharge, couleur : this.state.couleurChoisie.nom, latitude : this.state.latBorne, longitude : this.state.lngBorne, montant})
+    };
+
+    fetch("http://localhost:8080/mail/borne", requestOptions)
+        .then(
+          (result) => {
+            console.log(result);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+
+
   }
 
   render() {
